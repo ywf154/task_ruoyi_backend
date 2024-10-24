@@ -61,6 +61,14 @@
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
 
+
+        <!--   任务管理系统         -->
+        <dependency>
+            <groupId>com.ssmLearn</groupId>
+            <artifactId>task</artifactId>
+        </dependency>
+
+
     </dependencies>
 
     <build>

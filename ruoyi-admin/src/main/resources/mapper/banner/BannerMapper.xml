@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.banner.mapper.BannerMapper">
+    
+    <resultMap type="Banner" id="BannerResult">
+        <result property="id"    column="id"    />
+        <result property="addTime"    column="add_time"    />
+        <result property="title"    column="title"    />
+        <result property="image"    column="image"    />
+        <result property="url"    column="url"    />
+    </resultMap>
+
+    <sql id="selectBannerVo">
+        select id, add_time, title, image, url from operations_banner
+    </sql>
+
+    <select id="selectBannerList" parameterType="Banner" resultMap="BannerResult">
+        <include refid="selectBannerVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectBannerById" parameterType="Long" resultMap="BannerResult">
+        <include refid="selectBannerVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBanner" parameterType="Banner" useGeneratedKeys="true" keyProperty="id">
+        insert into operations_banner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="addTime != null">add_time,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="image != null and image != ''">image,</if>
+            <if test="url != null and url != ''">url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="addTime != null">#{addTime},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="image != null and image != ''">#{image},</if>
+            <if test="url != null and url != ''">#{url},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBanner" parameterType="Banner">
+        update operations_banner
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="addTime != null">add_time = #{addTime},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="image != null and image != ''">image = #{image},</if>
+            <if test="url != null and url != ''">url = #{url},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBannerById" parameterType="Long">
+        delete from operations_banner where id = #{id}
+    </delete>
+
+    <delete id="deleteBannerByIds" parameterType="String">
+        delete from operations_banner where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

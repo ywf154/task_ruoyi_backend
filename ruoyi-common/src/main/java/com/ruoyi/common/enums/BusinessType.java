@@ -56,4 +56,13 @@ public enum BusinessType
      * 清空数据
      */
     CLEAN,
+    /*
+    *完成
+    */
+    FINISH,
+    /*
+     *取消完成
+     */
+    UNFINISH,
+
 }

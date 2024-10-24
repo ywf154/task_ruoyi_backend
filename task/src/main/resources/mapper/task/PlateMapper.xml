@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.task.mapper.PlateMapper">
+    
+    <resultMap type="Plate" id="PlateResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="dutyuser"    column="dutyuser"    />
+    </resultMap>
+
+    <resultMap id="PlateTypeResult" type="Plate" extends="PlateResult">
+        <collection property="typeList" ofType="Type" column="id" select="selectTypeList" />
+    </resultMap>
+
+    <resultMap type="Type" id="TypeResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="plateId"    column="plate_id"    />
+        <result property="douser"    column="douser"    />
+    </resultMap>
+
+    <sql id="selectPlateVo">
+        select id, name, dutyuser from plate
+    </sql>
+
+    <select id="selectPlateList" parameterType="Plate" resultMap="PlateResult">
+        <include refid="selectPlateVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="dutyuser != null  and dutyuser != ''"> and dutyuser = #{dutyuser}</if>
+        </where>
+    </select>
+    
+    <select id="selectPlateById" parameterType="Long" resultMap="PlateTypeResult">
+        select id, name, dutyuser
+        from plate
+        where id = #{id}
+    </select>
+
+    <select id="selectTypeList" resultMap="TypeResult">
+        select id, name, plate_id, douser
+        from type
+        where plate_id = #{plate_id}
+    </select>
+
+    <insert id="insertPlate" parameterType="Plate" useGeneratedKeys="true" keyProperty="id">
+        insert into plate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="dutyuser != null and dutyuser != ''">dutyuser,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="dutyuser != null and dutyuser != ''">#{dutyuser},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePlate" parameterType="Plate">
+        update plate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="dutyuser != null and dutyuser != ''">dutyuser = #{dutyuser},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePlateById" parameterType="Long">
+        delete from plate where id = #{id}
+    </delete>
+
+    <delete id="deletePlateByIds" parameterType="String">
+        delete from plate where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteTypeByPlateIds" parameterType="String">
+        delete from type where plate_id in 
+        <foreach item="plateId" collection="array" open="(" separator="," close=")">
+            #{plateId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteTypeByPlateId" parameterType="Long">
+        delete from type where plate_id = #{plateId}
+    </delete>
+
+    <insert id="batchType">
+        insert into type( id, name, plate_id, douser) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.name}, #{item.plateId}, #{item.douser})
+        </foreach>
+    </insert>
+</mapper>
